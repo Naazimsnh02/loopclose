@@ -6,6 +6,7 @@ import { Loinc } from '@loopclose/fhir';
 import type { Actor, Owner } from '@loopclose/shared';
 import { CurrentUser, Roles, type AuthenticatedUser } from '../../common/actor';
 import { ClockService } from '../../common/clock.service';
+import { demoControlsEnabled } from '../../common/demo-mode';
 import { PrismaService } from '../../common/prisma.service';
 import { ProgrammeRegistry } from '../../common/programme-registry.service';
 import { CasesModule } from '../cases/cases.module';
@@ -53,7 +54,7 @@ const DEMO_PREFIX = 'demo-';
  * push a lab result, fast-forward the clock (with an immediate SLA sweep), simulate a no-show,
  * a declined referral or a failing channel, and reset the session. Every action goes through the
  * real services (intake, case engine, escalations), never around them.
- * Hard-disabled when DEMO_MODE != true or NODE_ENV = production.
+ * Disabled unless DEMO_MODE=true (and, in production builds, DEMO_SANDBOX=true). See common/demo-mode.ts.
  */
 @ApiTags('demo')
 @ApiBearerAuth()
@@ -72,7 +73,7 @@ class DemoController {
   ) {}
 
   private guard() {
-    if (process.env.DEMO_MODE !== 'true' || process.env.NODE_ENV === 'production') throw new ForbiddenException('Demo controls disabled');
+    if (!demoControlsEnabled()) throw new ForbiddenException('Demo controls disabled');
   }
 
   private actor(u: AuthenticatedUser): Actor {

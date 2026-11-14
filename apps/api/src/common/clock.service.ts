@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { demoControlsEnabled } from './demo-mode';
 
 /**
  * Single source of "now". In demo mode an offset can be applied so SLA breaches can be
- * demonstrated deterministically (E10.5). Disabled when NODE_ENV=production.
+ * demonstrated deterministically (E10.5). Only available when demo controls are enabled.
  */
 @Injectable()
 export class ClockService {
@@ -13,7 +14,7 @@ export class ClockService {
   }
 
   setOffsetHours(hours: number) {
-    if (process.env.NODE_ENV === 'production') throw new Error('Clock offset is disabled in production');
+    if (process.env.NODE_ENV === 'production' && !demoControlsEnabled()) throw new Error('Clock offset is disabled in production outside a demo sandbox');
     this.offsetMs = hours * 3_600_000;
   }
 
