@@ -1,0 +1,134 @@
+# Breast screening: BI-RADS 4/5 mammogram -> diagnostic imaging -> biopsy -> MDT -> treatment
+# Proves the engine is programme-agnostic: same canonical stages, different states/SLAs/owners.
+id: breast-birads
+name: Breast cancer screening (mammography)
+version: 0.1.0
+initialState: result_issued
+terminalStates: [closed, declined_by_patient, lost_to_follow_up]
+
+calendar:
+  businessDays: [1, 2, 3, 4, 5]
+  holidays: []
+
+states:
+  - id: result_issued
+    stage: issued
+    ownerRole: coordinator
+    next: [patient_notified]
+    sla:
+      routine: { businessDays: 1 }
+      priority: { hours: 8 }
+      urgent: { hours: 2 }
+    escalateTo: coordinator_lead
+
+  - id: patient_notified
+    stage: notified
+    ownerRole: coordinator
+    next: [patient_acknowledged]
+    sla:
+      routine: { days: 2 }
+      priority: { days: 1 }
+      urgent: { hours: 6 }
+    escalateTo: coordinator_lead
+    onBreach: retry_alternate_channel
+
+  - id: patient_acknowledged
+    stage: acknowledged
+    ownerRole: breast_radiologist
+    next: [referral_sent]
+    sla:
+      routine: { businessDays: 2 }
+      priority: { businessDays: 1 }
+      urgent: { hours: 8 }
+    escalateTo: radiology_lead
+
+  - id: referral_sent # to diagnostic imaging / breast clinic
+    stage: referred
+    ownerRole: breast_clinic
+    next: [referral_accepted, referral_sent]
+    sla:
+      routine: { businessDays: 2 }
+      priority: { businessDays: 1 }
+      urgent: { hours: 4 }
+    escalateTo: coordinator
+
+  - id: referral_accepted
+    stage: referral_accepted
+    ownerRole: breast_clinic_scheduler
+    next: [appointment_booked]
+    sla:
+      routine: { businessDays: 3 }
+      priority: { businessDays: 2 }
+      urgent: { hours: 24 }
+    escalateTo: breast_clinic_lead
+
+  - id: appointment_booked # diagnostic imaging + biopsy visit
+    stage: appointment
+    ownerRole: breast_clinic
+    next: [confirmatory_done, appointment_booked]
+    sla:
+      routine: { days: 14, from: case_created }
+      priority: { days: 10, from: case_created }
+      urgent: { days: 5, from: case_created }
+    escalateTo: breast_clinic_lead
+
+  - id: confirmatory_done # biopsy result + MDT
+    stage: confirmatory
+    ownerRole: breast_clinic
+    next: [treatment_or_surveillance]
+    sla:
+      routine: { days: 7 }
+      priority: { days: 5 }
+      urgent: { hours: 72 }
+    escalateTo: breast_clinic_lead
+
+  - id: treatment_or_surveillance
+    stage: treatment
+    ownerRole: treating_clinician
+    next: [closed]
+    sla:
+      routine: { days: 14 }
+      priority: { days: 10 }
+      urgent: { days: 7 }
+    escalateTo: breast_clinic_lead
+
+  - id: closed
+    stage: closed
+    ownerRole: null
+    next: []
+  - id: declined_by_patient
+    stage: exited
+    ownerRole: null
+    next: []
+  - id: lost_to_follow_up
+    stage: exited
+    ownerRole: null
+    next: []
+
+closure:
+  fromStates: [treatment_or_surveillance, confirmatory_done]
+  evidenceTypes: [biopsy_report, mdt_outcome, care_plan, surveillance_order, diagnostic_imaging_report]
+  requireEvidenceOrHumanDecision: true
+
+exits:
+  declined_by_patient:
+    fromStates: [patient_acknowledged, referral_sent, referral_accepted, appointment_booked]
+    requireJustification: true
+  lost_to_follow_up:
+    fromStates: [patient_notified, patient_acknowledged, referral_accepted, appointment_booked]
+    minOutreachAttempts: 3
+    minDistinctChannels: 2
+    requirePhoneAttempt: true
+
+aiPolicy:
+  mayEnterStates: [patient_acknowledged]
+  mayAssignOwners: false
+  mayClose: false
+
+urgencyRules:
+  - id: birads-5
+    when: { flag: birads_5 }
+    tier: urgent
+  - id: birads-4c
+    when: { flag: birads_4c }
+    tier: priority

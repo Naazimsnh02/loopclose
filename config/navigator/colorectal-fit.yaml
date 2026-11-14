@@ -1,0 +1,61 @@
+# Patient navigator script for colorectal FIT (E5.4–5.5). Every string here is patient-facing and
+# goes through the SafetyGrader before send. Draft until clinical + native-speaker sign-off.
+programme: colorectal-fit
+version: nav-crc-0.1.0
+approval: { status: draft, approvedBy: null, approvedAt: null }
+
+teachBack:
+  # Teach-back passes when the answer names the next step (a follow-up test / colonoscopy / seeing a
+  # doctor for a check) and does not express uncertainty. Latin terms are accepted in every locale.
+  passKeywords:
+    any: ["colonoscopy", "colonoscopi", "follow-up", "follow up", "further test", "another test", "more test", "camera", "scope", "check the cause", "see a doctor", "see the doctor", "doctor will call", "doctor will contact"]
+    ar: ["تنظير", "منظار", "فحص متابعة", "فحص آخر", "فحص إضافي", "طبيب", "دكتور", "الكاميرا", "كاميرا"]
+    ur: ["کولونوسکوپی", "ٹیسٹ", "ڈاکٹر", "معائنہ", "کیمرہ", "جانچ"]
+    hi: ["कोलोनोस्कोपी", "जाँच", "जांच", "टेस्ट", "डॉक्टर", "कैमरा"]
+
+messages:
+  teach_back_pass:
+    en: "That's right, thank you. The next step is a follow-up test called a colonoscopy, and a doctor will contact you to arrange it. I've let the team know you have the information."
+    ar: "صحيح، شكرًا لك. الخطوة التالية هي فحص متابعة يُسمى تنظير القولون، وسيتواصل معك طبيب لترتيبه. لقد أبلغت الفريق بأنك اطلعت على المعلومات."
+    ur: "بالکل درست، شکریہ۔ اگلا قدم کولونوسکوپی نامی ایک فالو اپ ٹیسٹ ہے، اور ایک ڈاکٹر اس کا انتظام کرنے کے لیے آپ سے رابطہ کرے گا۔ میں نے ٹیم کو بتا دیا ہے کہ آپ کو معلومات مل گئی ہیں۔"
+    hi: "बिल्कुल सही, धन्यवाद। अगला कदम कोलोनोस्कोपी नाम की एक फ़ॉलो-अप जाँच है, और एक डॉक्टर इसकी व्यवस्था के लिए आपसे संपर्क करेंगे। मैंने टीम को बता दिया है कि आपको जानकारी मिल गई है।"
+  re_explain:
+    en: "Let me say it more simply. The test found a tiny amount of blood. We need to find out why. A doctor will look inside the bowel with a small camera. This test is called a colonoscopy. A doctor will call you to plan it. Can you tell me, in your own words, what happens next?"
+    ar: "دعني أشرحها بشكل أبسط. وجد الفحص كمية صغيرة جدًا من الدم، ونحتاج إلى معرفة السبب. سينظر الطبيب داخل الأمعاء بكاميرا صغيرة، ويُسمى هذا الفحص تنظير القولون. سيتصل بك طبيب لترتيبه. هل يمكنك أن تخبرني بكلماتك ماذا سيحدث بعد ذلك؟"
+    ur: "میں اسے آسان الفاظ میں بتاتا ہوں۔ ٹیسٹ میں بہت تھوڑا خون ملا ہے۔ ہمیں اس کی وجہ جاننی ہے۔ ڈاکٹر ایک چھوٹے کیمرے سے آنت کے اندر دیکھیں گے۔ اس ٹیسٹ کو کولونوسکوپی کہتے ہیں۔ ایک ڈاکٹر اسے طے کرنے کے لیے آپ کو کال کرے گا۔ کیا آپ اپنے الفاظ میں بتا سکتے ہیں کہ آگے کیا ہوگا؟"
+    hi: "मैं इसे आसान शब्दों में बताता हूँ। जाँच में बहुत थोड़ा खून मिला है। हमें इसका कारण जानना है। डॉक्टर एक छोटे कैमरे से आँत के अंदर देखेंगे। इस जाँच को कोलोनोस्कोपी कहते हैं। एक डॉक्टर इसकी योजना बनाने के लिए आपको कॉल करेंगे। क्या आप अपने शब्दों में बता सकते हैं कि आगे क्या होगा?"
+
+faqs:
+  - id: what_is_colonoscopy
+    keywords:
+      any: ["what is a colonoscopy", "what is colonoscopy", "colonoscopy?", "does it hurt", "will it hurt", "painful", "how is it done"]
+      ar: ["ما هو تنظير", "ما هو المنظار", "هل يؤلم", "مؤلم", "كيف يتم"]
+      ur: ["کولونوسکوپی کیا", "درد ہوگا", "تکلیف", "کیسے ہوتا"]
+      hi: ["कोलोनोस्कोपी क्या", "दर्द होगा", "दर्द होता", "कैसे होती"]
+    answer:
+      en: "A colonoscopy is a test where a doctor uses a thin, flexible tube with a small camera to look inside the bowel. Most people are given medicine so they are comfortable. The team will explain how to prepare before the day."
+      ar: "تنظير القولون فحص يستخدم فيه الطبيب أنبوبًا رفيعًا ومرنًا مزودًا بكاميرا صغيرة للنظر داخل الأمعاء. يُعطى معظم الناس دواءً ليكونوا مرتاحين. سيشرح لك الفريق كيفية الاستعداد قبل موعد الفحص."
+      ur: "کولونوسکوپی ایک ٹیسٹ ہے جس میں ڈاکٹر ایک پتلی، لچکدار نالی اور چھوٹے کیمرے سے آنت کے اندر دیکھتے ہیں۔ زیادہ تر لوگوں کو دوا دی جاتی ہے تاکہ وہ آرام سے رہیں۔ ٹیم آپ کو بتائے گی کہ اس دن سے پہلے کیسے تیاری کرنی ہے۔"
+      hi: "कोलोनोस्कोपी एक जाँच है जिसमें डॉक्टर एक पतली, लचीली नली और छोटे कैमरे से आँत के अंदर देखते हैं। ज़्यादातर लोगों को दवा दी जाती है ताकि वे आराम से रहें। टीम आपको बताएगी कि उस दिन से पहले कैसे तैयारी करनी है।"
+  - id: is_it_cancer
+    keywords:
+      any: ["cancer", "is it serious", "serious?", "tumour", "tumor"]
+      ar: ["سرطان", "خطير", "ورم"]
+      ur: ["کینسر", "سنگین", "رسولی"]
+      hi: ["कैंसर", "गंभीर", "ट्यूमर"]
+    answer:
+      en: "This result is not a diagnosis. Blood in the stool has many possible causes, and most people with this result do not have cancer. Only the follow-up test can find the cause, which is why it is important to have it."
+      ar: "هذه النتيجة ليست تشخيصًا. لوجود الدم في البراز أسباب كثيرة محتملة، ومعظم الأشخاص الذين تظهر لديهم هذه النتيجة ليس لديهم سرطان. فحص المتابعة وحده يمكنه معرفة السبب، ولهذا من المهم إجراؤه."
+      ur: "یہ نتیجہ تشخیص نہیں ہے۔ پاخانے میں خون کی کئی ممکنہ وجوہات ہوتی ہیں، اور اس نتیجے والے زیادہ تر لوگوں کو کینسر نہیں ہوتا۔ صرف فالو اپ ٹیسٹ ہی وجہ بتا سکتا ہے، اسی لیے یہ کروانا ضروری ہے۔"
+      hi: "यह परिणाम निदान नहीं है। मल में खून के कई संभावित कारण होते हैं, और इस परिणाम वाले ज़्यादातर लोगों को कैंसर नहीं होता। सिर्फ़ फ़ॉलो-अप जाँच ही कारण बता सकती है, इसलिए इसे करवाना ज़रूरी है।"
+  - id: when_where
+    keywords:
+      any: ["when", "where", "which hospital", "which clinic", "appointment", "how long"]
+      ar: ["متى", "أين", "وين", "موعد", "أي مستشفى"]
+      ur: ["کب", "کہاں", "اپائنٹمنٹ", "کون سا ہسپتال"]
+      hi: ["कब", "कहाँ", "कहां", "अपॉइंटमेंट", "कौन सा अस्पताल"]
+    answer:
+      en: "A doctor will contact you to arrange the follow-up test and tell you where it will be. We aim to do this by {{nextStepDeadline}}. If you have not heard from us by then, please call {{contactNumber}}."
+      ar: "سيتواصل معك طبيب لترتيب فحص المتابعة وإخبارك بمكانه. نهدف إلى ذلك بحلول {{nextStepDeadline}}. إذا لم نتواصل معك حتى ذلك الحين، يرجى الاتصال على {{contactNumber}}."
+      ur: "ایک ڈاکٹر فالو اپ ٹیسٹ کا انتظام کرنے اور جگہ بتانے کے لیے آپ سے رابطہ کرے گا۔ ہماری کوشش ہے کہ یہ {{nextStepDeadline}} تک ہو۔ اگر تب تک ہم سے رابطہ نہ ہو تو براہ کرم {{contactNumber}} پر کال کریں۔"
+      hi: "एक डॉक्टर फ़ॉलो-अप जाँच की व्यवस्था करने और जगह बताने के लिए आपसे संपर्क करेंगे। हमारा लक्ष्य {{nextStepDeadline}} तक ऐसा करना है। अगर तब तक हमसे संपर्क न हो, तो कृपया {{contactNumber}} पर कॉल करें।"

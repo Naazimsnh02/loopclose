@@ -1,0 +1,59 @@
+# Patient-facing message templates are the ONLY source of patient text. (E5.1 / E16.3)
+# Approval metadata is mandatory before a template may be sent in non-demo mode.
+id: breast-birads.result_issued.v1
+programme: breast-birads
+stage: result_issued
+purpose: Tell the patient their mammogram needs further assessment, explain what it means and does not mean, and set up the next step.
+readingLevelTarget: grade6
+variables: [patientFirstName, programmeName, clinicName, nextStepDeadline, contactNumber]
+approval:
+  status: draft # draft | approved
+  approvedBy: null
+  approvedAt: null
+  reviewers: {} # locale -> reviewer name, date
+
+teachBack:
+  question:
+    en: "Just so I know I explained it well — in your own words, what is the next step?"
+    ar: "حتى أتأكد أنني شرحت الأمر جيدًا — بكلماتك أنت، ما هي الخطوة التالية؟"
+    ur: "تاکہ مجھے یقین ہو کہ میں نے اچھی طرح سمجھایا — اپنے الفاظ میں بتائیں، اگلا قدم کیا ہے؟"
+    hi: "यह सुनिश्चित करने के लिए कि मैंने ठीक से समझाया — अपने शब्दों में बताइए, अगला कदम क्या है?"
+  passCriteria: "Patient mentions more imaging / a biopsy / a visit to the breast clinic for a further check."
+
+body:
+  en: |
+    Hello {{patientFirstName}}, this is the {{programmeName}} team at {{clinicName}}.
+
+    Your recent mammogram showed an area that needs a closer look. This is not a diagnosis of cancer. To find out what it is, you need more tests at the breast clinic. These may include more pictures (imaging) and possibly a small sample of tissue (biopsy).
+
+    Next step: the breast clinic will contact you to arrange this visit. We aim to do this by {{nextStepDeadline}}.
+
+    You can reply to this message with any question, or call us on {{contactNumber}}. A person is always available.
+  ar: |
+    مرحبًا {{patientFirstName}}، نحن فريق {{programmeName}} في {{clinicName}}.
+
+    أظهر تصوير الثدي الشعاعي (الماموغرام) الأخير منطقة تحتاج إلى فحص أدق. هذا ليس تشخيصًا بالسرطان. لمعرفة السبب، تحتاجين إلى فحوصات إضافية في عيادة الثدي، قد تشمل صورًا إضافية وربما أخذ عينة صغيرة من النسيج (خزعة).
+
+    الخطوة التالية: ستتواصل معك عيادة الثدي لترتيب هذه الزيارة. نهدف إلى إتمامها بحلول {{nextStepDeadline}}.
+
+    يمكنك الرد على هذه الرسالة بأي سؤال، أو الاتصال بنا على {{contactNumber}}. هناك دائمًا شخص متاح لمساعدتك.
+  ur: |
+    السلام علیکم {{patientFirstName}}، ہم {{clinicName}} میں {{programmeName}} کی ٹیم ہیں۔
+
+    آپ کے حالیہ میموگرام میں ایک حصہ نظر آیا ہے جسے مزید غور سے دیکھنے کی ضرورت ہے۔ یہ کینسر کی تشخیص نہیں ہے۔ وجہ جاننے کے لیے بریسٹ کلینک میں مزید ٹیسٹ ضروری ہیں، جن میں مزید تصاویر اور ممکنہ طور پر ٹشو کا ایک چھوٹا نمونہ (بایوپسی) شامل ہو سکتا ہے۔
+
+    اگلا قدم: بریسٹ کلینک اس ملاقات کا انتظام کرنے کے لیے آپ سے رابطہ کرے گا۔ ہماری کوشش ہے کہ یہ {{nextStepDeadline}} تک ہو جائے۔
+
+    آپ کسی بھی سوال کے لیے اس پیغام کا جواب دے سکتی ہیں، یا ہمیں {{contactNumber}} پر کال کریں۔ ایک شخص ہمیشہ دستیاب ہے۔
+  hi: |
+    नमस्ते {{patientFirstName}}, हम {{clinicName}} में {{programmeName}} की टीम हैं।
+
+    आपके हाल के मैमोग्राम में एक हिस्सा दिखा है जिसे और ध्यान से देखने की ज़रूरत है। यह कैंसर का निदान नहीं है। कारण जानने के लिए ब्रेस्ट क्लिनिक में और जाँच ज़रूरी है, जिसमें और तस्वीरें और शायद ऊतक का एक छोटा नमूना (बायोप्सी) शामिल हो सकता है।
+
+    अगला कदम: ब्रेस्ट क्लिनिक इस मुलाक़ात की व्यवस्था के लिए आपसे संपर्क करेगा। हमारा लक्ष्य {{nextStepDeadline}} तक इसे करना है।
+
+    किसी भी सवाल के लिए आप इस संदेश का जवाब दे सकती हैं, या हमें {{contactNumber}} पर कॉल करें। एक व्यक्ति हमेशा उपलब्ध है।
+
+guardrails:
+  mustNotContain: ["you have cancer", "you do not have cancer", "nothing to worry", "probably nothing", probability, percent, "%"]
+  mustPreserve: [not a diagnosis, more tests, a person is available]

@@ -1,0 +1,59 @@
+# Patient navigator script for breast BI-RADS 4/5 (E5.4–5.5). Every string here is patient-facing and
+# goes through the SafetyGrader before send. Draft until clinical + native-speaker sign-off.
+programme: breast-birads
+version: nav-breast-0.1.0
+approval: { status: draft, approvedBy: null, approvedAt: null }
+
+teachBack:
+  passKeywords:
+    any: ["biopsy", "more pictures", "more imaging", "more tests", "more test", "another test", "further test", "ultrasound", "breast clinic", "clinic will call", "clinic will contact", "closer look", "sample"]
+    ar: ["خزعة", "عينة", "صور إضافية", "فحوصات إضافية", "فحص إضافي", "عيادة الثدي", "الموجات فوق الصوتية", "أشعة"]
+    ur: ["بایوپسی", "نمونہ", "مزید تصاویر", "مزید ٹیسٹ", "بریسٹ کلینک", "الٹراساؤنڈ", "کلینک"]
+    hi: ["बायोप्सी", "नमूना", "और तस्वीरें", "और जाँच", "और जांच", "ब्रेस्ट क्लिनिक", "अल्ट्रासाउंड", "क्लिनिक"]
+
+messages:
+  teach_back_pass:
+    en: "That's right, thank you. The next step is more tests at the breast clinic, which may include more pictures and a small tissue sample. The clinic will contact you to arrange it. I've let the team know you have the information."
+    ar: "صحيح، شكرًا لك. الخطوة التالية هي فحوصات إضافية في عيادة الثدي، قد تشمل صورًا إضافية وعينة صغيرة من النسيج. ستتواصل معك العيادة لترتيب ذلك. لقد أبلغت الفريق بأنك اطلعت على المعلومات."
+    ur: "بالکل درست، شکریہ۔ اگلا قدم بریسٹ کلینک میں مزید ٹیسٹ ہیں، جن میں مزید تصاویر اور ٹشو کا ایک چھوٹا نمونہ شامل ہو سکتا ہے۔ کلینک اس کا انتظام کرنے کے لیے آپ سے رابطہ کرے گا۔ میں نے ٹیم کو بتا دیا ہے کہ آپ کو معلومات مل گئی ہیں۔"
+    hi: "बिल्कुल सही, धन्यवाद। अगला कदम ब्रेस्ट क्लिनिक में और जाँच है, जिसमें और तस्वीरें और ऊतक का एक छोटा नमूना शामिल हो सकता है। क्लिनिक इसकी व्यवस्था के लिए आपसे संपर्क करेगा। मैंने टीम को बता दिया है कि आपको जानकारी मिल गई है।"
+  re_explain:
+    en: "Let me say it more simply. The mammogram showed an area we need to look at more closely. You will visit the breast clinic for more pictures, and maybe a small sample of tissue. The clinic will call you to plan this. Can you tell me, in your own words, what happens next?"
+    ar: "دعيني أشرحها بشكل أبسط. أظهر الماموغرام منطقة نحتاج إلى النظر إليها عن قرب. ستزورين عيادة الثدي لأخذ صور إضافية، وربما عينة صغيرة من النسيج. ستتصل بك العيادة لترتيب ذلك. هل يمكنك أن تخبريني بكلماتك ماذا سيحدث بعد ذلك؟"
+    ur: "میں اسے آسان الفاظ میں بتاتی ہوں۔ میموگرام میں ایک حصہ نظر آیا ہے جسے ہمیں قریب سے دیکھنا ہے۔ آپ مزید تصاویر کے لیے، اور شاید ٹشو کے ایک چھوٹے نمونے کے لیے، بریسٹ کلینک جائیں گی۔ کلینک اسے طے کرنے کے لیے آپ کو کال کرے گا۔ کیا آپ اپنے الفاظ میں بتا سکتی ہیں کہ آگے کیا ہوگا؟"
+    hi: "मैं इसे आसान शब्दों में बताती हूँ। मैमोग्राम में एक हिस्सा दिखा है जिसे हमें पास से देखना है। आप और तस्वीरों के लिए, और शायद ऊतक के एक छोटे नमूने के लिए, ब्रेस्ट क्लिनिक जाएँगी। क्लिनिक इसकी योजना बनाने के लिए आपको कॉल करेगा। क्या आप अपने शब्दों में बता सकती हैं कि आगे क्या होगा?"
+
+faqs:
+  - id: what_is_biopsy
+    keywords:
+      any: ["what is a biopsy", "what is biopsy", "biopsy?", "does it hurt", "will it hurt", "painful"]
+      ar: ["ما هي الخزعة", "هل يؤلم", "مؤلم"]
+      ur: ["بایوپسی کیا", "درد ہوگا", "تکلیف"]
+      hi: ["बायोप्सी क्या", "दर्द होगा", "दर्द होता"]
+    answer:
+      en: "A biopsy means taking a very small sample of tissue with a thin needle, so it can be looked at under a microscope. The area is numbed first. Not everyone needs one; the breast clinic will explain what is right for you."
+      ar: "الخزعة تعني أخذ عينة صغيرة جدًا من النسيج بإبرة رفيعة لفحصها تحت المجهر. يتم تخدير المنطقة أولًا. لا يحتاجها الجميع، وستشرح لك عيادة الثدي ما هو مناسب لك."
+      ur: "بایوپسی کا مطلب ہے ایک پتلی سوئی سے ٹشو کا بہت چھوٹا نمونہ لینا تاکہ اسے خوردبین سے دیکھا جا سکے۔ پہلے اس جگہ کو سن کیا جاتا ہے۔ ہر کسی کو اس کی ضرورت نہیں ہوتی؛ بریسٹ کلینک بتائے گا کہ آپ کے لیے کیا مناسب ہے۔"
+      hi: "बायोप्सी का मतलब है एक पतली सुई से ऊतक का बहुत छोटा नमूना लेना, ताकि उसे माइक्रोस्कोप से देखा जा सके। पहले उस जगह को सुन्न किया जाता है। हर किसी को इसकी ज़रूरत नहीं होती; ब्रेस्ट क्लिनिक बताएगा कि आपके लिए क्या सही है।"
+  - id: is_it_cancer
+    keywords:
+      any: ["cancer", "is it serious", "serious?", "tumour", "tumor", "lump"]
+      ar: ["سرطان", "خطير", "ورم", "كتلة"]
+      ur: ["کینسر", "سنگین", "رسولی", "گلٹی"]
+      hi: ["कैंसर", "गंभीर", "ट्यूमर", "गांठ", "गाँठ"]
+    answer:
+      en: "This result is not a diagnosis. An area that needs a closer look can have many causes. Only the further tests at the breast clinic can find the cause, which is why it is important to go."
+      ar: "هذه النتيجة ليست تشخيصًا. قد يكون للمنطقة التي تحتاج إلى فحص أدق أسباب كثيرة. الفحوصات الإضافية في عيادة الثدي وحدها يمكنها معرفة السبب، ولهذا من المهم الذهاب."
+      ur: "یہ نتیجہ تشخیص نہیں ہے۔ جس حصے کو غور سے دیکھنے کی ضرورت ہو اس کی کئی وجوہات ہو سکتی ہیں۔ صرف بریسٹ کلینک کے مزید ٹیسٹ ہی وجہ بتا سکتے ہیں، اسی لیے وہاں جانا ضروری ہے۔"
+      hi: "यह परिणाम निदान नहीं है। जिस हिस्से को ध्यान से देखने की ज़रूरत हो, उसके कई कारण हो सकते हैं। सिर्फ़ ब्रेस्ट क्लिनिक की आगे की जाँच ही कारण बता सकती है, इसलिए वहाँ जाना ज़रूरी है।"
+  - id: when_where
+    keywords:
+      any: ["when", "where", "which hospital", "which clinic", "appointment", "how long"]
+      ar: ["متى", "أين", "وين", "موعد", "أي مستشفى"]
+      ur: ["کب", "کہاں", "اپائنٹمنٹ", "کون سا ہسپتال"]
+      hi: ["कब", "कहाँ", "कहां", "अपॉइंटमेंट", "कौन सा अस्पताल"]
+    answer:
+      en: "The breast clinic will contact you to arrange the visit and tell you where it will be. We aim to do this by {{nextStepDeadline}}. If you have not heard from us by then, please call {{contactNumber}}."
+      ar: "ستتواصل معك عيادة الثدي لترتيب الزيارة وإخبارك بمكانها. نهدف إلى ذلك بحلول {{nextStepDeadline}}. إذا لم نتواصل معك حتى ذلك الحين، يرجى الاتصال على {{contactNumber}}."
+      ur: "بریسٹ کلینک ملاقات کا انتظام کرنے اور جگہ بتانے کے لیے آپ سے رابطہ کرے گا۔ ہماری کوشش ہے کہ یہ {{nextStepDeadline}} تک ہو۔ اگر تب تک ہم سے رابطہ نہ ہو تو براہ کرم {{contactNumber}} پر کال کریں۔"
+      hi: "ब्रेस्ट क्लिनिक मुलाक़ात की व्यवस्था करने और जगह बताने के लिए आपसे संपर्क करेगा। हमारा लक्ष्य {{nextStepDeadline}} तक ऐसा करना है। अगर तब तक हमसे संपर्क न हो, तो कृपया {{contactNumber}} पर कॉल करें।"

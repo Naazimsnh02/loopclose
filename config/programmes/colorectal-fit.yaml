@@ -1,0 +1,151 @@
+# Colorectal screening: positive FIT -> colonoscopy -> histology -> treatment/surveillance
+# SLA values are placeholders pending clinical-lead validation against the DoH/IFHAS programme standard (E16.1).
+id: colorectal-fit
+name: Colorectal cancer screening (FIT)
+version: 0.1.0
+initialState: result_issued
+terminalStates: [closed, declined_by_patient, lost_to_follow_up]
+
+# Calendar used for business-day SLAs (UAE working week)
+calendar:
+  businessDays: [1, 2, 3, 4, 5] # Mon..Fri (0 = Sunday)
+  holidays: []
+
+states:
+  - id: result_issued
+    stage: issued
+    ownerRole: coordinator
+    next: [patient_notified]
+    sla:
+      routine: { businessDays: 2 }
+      priority: { businessDays: 1 }
+      urgent: { hours: 4 }
+    escalateTo: coordinator_lead
+
+  - id: patient_notified
+    stage: notified
+    ownerRole: coordinator
+    next: [patient_acknowledged]
+    sla:
+      routine: { days: 3 }
+      priority: { days: 2 }
+      urgent: { hours: 12 }
+    escalateTo: coordinator_lead
+    onBreach: retry_alternate_channel
+
+  - id: patient_acknowledged
+    stage: acknowledged
+    ownerRole: phc_clinician
+    next: [consult_done]
+    sla:
+      routine: { businessDays: 5 }
+      priority: { businessDays: 3 }
+      urgent: { hours: 24 }
+    escalateTo: phc_lead
+
+  - id: consult_done
+    stage: consulted
+    ownerRole: phc_clinician
+    next: [referral_sent]
+    sla:
+      routine: { businessDays: 2 }
+      priority: { businessDays: 1 }
+      urgent: { hours: 4 }
+    escalateTo: phc_lead
+
+  - id: referral_sent
+    stage: referred
+    ownerRole: specialist # recipient owns the Task once offered (360X/BSeR)
+    next: [referral_accepted, referral_sent] # self-loop = redirect after decline
+    sla:
+      routine: { businessDays: 3 }
+      priority: { businessDays: 2 }
+      urgent: { hours: 8 }
+    escalateTo: coordinator
+
+  - id: referral_accepted
+    stage: referral_accepted
+    ownerRole: specialist_scheduler
+    next: [appointment_booked]
+    sla:
+      routine: { businessDays: 5 }
+      priority: { businessDays: 3 }
+      urgent: { hours: 24 }
+    escalateTo: specialist_lead
+
+  - id: appointment_booked
+    stage: appointment
+    ownerRole: specialist
+    next: [confirmatory_done, appointment_booked] # self-loop = no-show rebook
+    sla:
+      # Programme standard: colonoscopy within 31 days of positive result (measured from case creation)
+      routine: { days: 31, from: case_created }
+      priority: { days: 21, from: case_created }
+      urgent: { days: 7, from: case_created }
+    escalateTo: specialist_lead
+
+  - id: confirmatory_done
+    stage: confirmatory
+    ownerRole: specialist
+    next: [treatment_or_surveillance]
+    sla:
+      routine: { days: 7 }
+      priority: { days: 5 }
+      urgent: { hours: 48 }
+    escalateTo: specialist_lead
+
+  - id: treatment_or_surveillance
+    stage: treatment
+    ownerRole: treating_clinician
+    next: [closed]
+    sla:
+      routine: { days: 14 }
+      priority: { days: 10 }
+      urgent: { days: 5 }
+    escalateTo: specialist_lead
+
+  - id: closed
+    stage: closed
+    ownerRole: null
+    next: []
+
+  - id: declined_by_patient
+    stage: exited
+    ownerRole: null
+    next: []
+
+  - id: lost_to_follow_up
+    stage: exited
+    ownerRole: null
+    next: []
+
+closure:
+  fromStates: [treatment_or_surveillance, confirmatory_done]
+  evidenceTypes: [colonoscopy_report, histology_report, care_plan, surveillance_order]
+  requireEvidenceOrHumanDecision: true
+
+exits:
+  declined_by_patient:
+    fromStates: [patient_acknowledged, consult_done, referral_sent, referral_accepted, appointment_booked]
+    requireJustification: true
+  lost_to_follow_up:
+    fromStates: [patient_notified, patient_acknowledged, referral_accepted, appointment_booked]
+    minOutreachAttempts: 3
+    minDistinctChannels: 2
+    requirePhoneAttempt: true
+
+aiPolicy:
+  mayEnterStates: [patient_acknowledged] # only when teach-back passes
+  mayAssignOwners: false
+  mayClose: false
+
+urgencyRules:
+  - id: alarm-symptoms
+    when: { flag: alarm_symptoms }
+    tier: urgent
+  - id: anaemia
+    when: { flag: anaemia }
+    tier: priority
+  - id: age-over-70
+    when: { ageGte: 70 }
+    tier: priority

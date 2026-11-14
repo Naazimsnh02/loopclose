@@ -1,0 +1,93 @@
+# Escalation rules consumed by the api EscalationsModule (E3.3). Evaluated on domain events.
+version: 0.1.0
+rules:
+  - id: sla-warn
+    on: sla.warn            # fired at 70% of SLA window
+    action: flag_amber
+    notify: [owner]
+
+  - id: sla-breach
+    on: sla.breach
+    action: create_escalation
+    target: state.escalateTo # role from programme state definition
+    notify: [owner, target]
+    suggestedAction: contact_owner
+
+  - id: referral-declined
+    on: referral.declined
+    action: create_escalation
+    target: coordinator
+    suggestedAction: redirect_referral
+
+  - id: owner-offer-timeout
+    on: owner.offer_timeout
+    action: create_escalation
+    target: coordinator
+    suggestedAction: reassign_owner
+
+  - id: appointment-no-show
+    on: appointment.no_show
+    action: create_escalation
+    target: coordinator
+    suggestedAction: rebook_and_outreach
+    also: recompute_risk
+
+  - id: patient-non-response
+    on: message.non_response   # no inbound after N attempts
+    action: create_escalation
+    target: coordinator
+    suggestedAction: phone_call
+
+  - id: patient-distress
+    on: message.distress_detected
+    action: create_escalation
+    priority: urgent
+    target: phc_clinician
+    suggestedAction: clinician_callback
+
+  - id: risk-red
+    on: risk.tier_changed
+    when: { tier: red }
+    action: create_escalation
+    target: coordinator
+    suggestedAction: from_risk_reasons
+
+  - id: urgent-tier-created
+    on: case.created
+    when: { tier: urgent }
+    action: create_escalation
+    priority: urgent
+    target: on_call_clinician
+    ackWithinHours: 2
+
+  # Patient navigator hand-offs (E5.5). The navigator never resolves these itself.
+  - id: patient-emergency
+    on: message.emergency_detected
+    action: create_escalation
+    priority: urgent
+    target: phc_clinician
+    suggestedAction: call_patient_now
+
+  - id: patient-human-request
+    on: message.human_requested
+    action: create_escalation
+    target: coordinator
+    suggestedAction: phone_call
+
+  - id: patient-not-understood
+    on: message.teach_back_failed
+    action: create_escalation
+    target: coordinator
+    suggestedAction: phone_call_with_interpreter
+
+  - id: patient-question
+    on: message.question_unanswered
+    action: create_escalation
+    target: coordinator
+    suggestedAction: reply_to_patient
+
+  - id: patient-unreachable
+    on: message.delivery_failed   # result message failed on every channel tried
+    action: create_escalation
+    target: coordinator
+    suggestedAction: phone_call

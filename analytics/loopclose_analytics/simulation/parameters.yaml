@@ -1,0 +1,28 @@
+# Parameters for the baseline vs LoopClose impact simulation (E10.4).
+# Every real-world-derived value carries a source. Effect sizes for the intervention arm are deliberately
+# conservative and are varied in the sensitivity analysis. This is a simulation, not clinical evidence.
+
+population:
+  eligible_adults: 5000
+  fit_positivity: 0.06            # ~5–7%; programme literature (placeholder range)
+
+baseline:
+  notify_failure_rate: 0.07       # ~7.1% failure to inform/document informing (Casalino et al., JAMA IM 2009, via Joint Commission summary)
+  ack_rate_given_notified: 0.80   # assumption; no direct Abu Dhabi figure
+  referral_to_appointment_loss: 0.363  # 36.3% referred to GI but never attended (Abu Dhabi AHS 2015–16, PMC8343888)
+  colonoscopy_completion_after_positive_fit: 0.305  # 30.5% (PMC8343888) — used as calibration target
+  no_show_rate: 0.20              # assumption; typical outpatient endoscopy no-show range
+  median_days_result_to_colonoscopy: 45   # assumption; programme target is 31 days (>90%)
+
+intervention:
+  # Conservative uplift ranges; sampled per replication from triangular(low, mode, high)
+  notify_failure_rate: [0.01, 0.02, 0.04]          # multi-channel + retry + phone fallback
+  ack_rate_given_notified: [0.85, 0.90, 0.95]      # teach-back + reminders
+  referral_to_appointment_loss: [0.15, 0.20, 0.28] # accept/decline tracking, redirect, scheduler ownership
+  no_show_rate: [0.10, 0.13, 0.17]                 # reminders + risk-driven outreach (navigation literature)
+  median_days_result_to_colonoscopy: [21, 26, 31]  # SLA clocks + escalation
+
+sla:
+  colonoscopy_within_days: 31
+
+replications: 1000

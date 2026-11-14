@@ -1,0 +1,400 @@
+// LoopClose relational model. The FHIR projection (HAPI) is derived from these tables via the outbox.
+// Synthetic data only. See docs/IMPLEMENTATION_PLAN.md §1.1.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrgKind {
+  PROGRAMME_AUTHORITY // e.g. ADPHC-like screening programme
+  LAB
+  PRIMARY_CARE
+  SPECIALIST
+  HOSPITAL
+}
+
+enum ActorKind {
+  human
+  system
+  ai
+}
+
+enum UrgencyTier {
+  routine
+  priority
+  urgent
+}
+
+enum Channel {
+  web_chat
+  whatsapp
+  sms
+  email
+  phone
+}
+
+enum MessageDirection {
+  outbound
+  inbound
+}
+
+enum DeliveryStatus {
+  queued
+  sent
+  delivered
+  failed
+  read
+}
+
+enum ReferralStatus {
+  offered
+  accepted
+  declined
+  redirected
+  in_progress
+  completed
+  cancelled
+}
+
+enum AppointmentStatus {
+  booked
+  attended
+  no_show
+  cancelled
+}
+
+enum ProposalKind {
+  handoff_summary
+  risk_assessment
+  suggested_action
+  patient_message
+  acknowledgement
+}
+
+enum ProposalStatus {
+  pending
+  accepted
+  rejected
+  expired
+}
+
+enum EscalationStatus {
+  open
+  acknowledged
+  resolved
+  dismissed
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  kind      OrgKind
+  createdAt DateTime @default(now())
+
+  users           User[]
+  casesAsOwnerOrg Case[]        @relation("CaseOwnerOrg")
+  referralsIn     Referral[]    @relation("ReferralRecipient")
+  referralsOut    Referral[]    @relation("ReferralInitiator")
+  results         ScreeningResult[]
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  displayName    String
+  role           String // coordinator | coordinator_lead | phc_clinician | phc_lead | specialist | specialist_scheduler | specialist_lead | treating_clinician | programme_manager | admin | on_call_clinician | ...
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  locale         String       @default("en")
+  createdAt      DateTime     @default(now())
+
+  ownedCases Case[] @relation("CaseOwner")
+}
+
+model Patient {
+  id              String   @id @default(cuid())
+  fhirId          String   @unique
+  givenName       String
+  familyName      String
+  birthDate       DateTime
+  sex             String
+  nationality     String?
+  preferredLocale String   @default("en") // ar | en | ur | hi
+  phone           String?
+  email           String?
+  distanceKm      Float?
+  transportBarrier Boolean @default(false)
+  priorNoShows    Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  consents ConsentRecord[]
+  results  ScreeningResult[]
+  cases    Case[]
+  messages Message[]
+}
+
+model ConsentRecord {
+  id         String   @id @default(cuid())
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  scope      String // messaging:<channel> | data_sharing:referral_packet | ai_assisted_communication
+  granted    Boolean
+  recordedAt DateTime @default(now())
+  source     String // verbal | portal | paper | programme_enrolment
+  fhirId     String?
+
+  @@index([patientId, scope])
+}
+
+model ScreeningResult {
+  id             String       @id @default(cuid())
+  externalId     String       @unique // idempotency key from LIS/HIE
+  programmeId    String
+  patientId      String
+  patient        Patient      @relation(fields: [patientId], references: [id])
+  performerOrgId String
+  performerOrg   Organization @relation(fields: [performerOrgId], references: [id])
+  loincCode      String
+  valueText      String
+  actionable     Boolean
+  flags          String[] // alarm_symptoms, anaemia, birads_5, ...
+  issuedAt       DateTime
+  receivedAt     DateTime     @default(now())
+  fhirReportId   String?
+  rawSource      Json? // original FHIR DiagnosticReport or HL7v2 message for traceability
+
+  case Case?
+}
+
+model Case {
+  id                   String      @id @default(cuid())
+  programmeId          String
+  resultId             String      @unique
+  result               ScreeningResult @relation(fields: [resultId], references: [id])
+  patientId            String
+  patient              Patient     @relation(fields: [patientId], references: [id])
+  state                String
+  tier                 UrgencyTier
+  ownerId              String?
+  owner                User?       @relation("CaseOwner", fields: [ownerId], references: [id])
+  ownerRole            String?
+  ownerOrgId           String?
+  ownerOrg             Organization? @relation("CaseOwnerOrg", fields: [ownerOrgId], references: [id])
+  version              Int         @default(1)
+  createdAt            DateTime    @default(now())
+  enteredStateAt       DateTime    @default(now())
+  slaDeadlineAt        DateTime?
+  slaWarnAt            DateTime?
+  stalled              Boolean     @default(false)
+  noShowCount          Int         @default(0)
+  referralDeclineCount Int         @default(0)
+  riskTier             String? // green | amber | red
+  riskScore            Float?
+  riskReasons          Json?
+  closedAt             DateTime?
+  fhirTaskId           String?
+
+  events       CaseEvent[]
+  evidence     Evidence[]
+  referrals    Referral[]
+  consults     Consult[]
+  messages     Message[]
+  appointments Appointment[]
+  proposals    AIProposal[]
+  escalations  Escalation[]
+  outreach     OutreachAttempt[]
+
+  @@index([state])
+  @@index([ownerId])
+  @@index([slaDeadlineAt])
+  @@index([programmeId, state])
+}
+
+/// Append-only. Projections (Case row, FHIR) are rebuildable from this table.
+model CaseEvent {
+  id         String    @id @default(cuid())
+  caseId     String
+  case       Case      @relation(fields: [caseId], references: [id])
+  sequence   Int
+  type       String
+  actorKind  ActorKind
+  actorId    String
+  actorRole  String?
+  payload    Json
+  occurredAt DateTime  @default(now())
+  fhirProvenanceId String?
+
+  @@unique([caseId, sequence])
+  @@index([type])
+}
+
+model Evidence {
+  id         String   @id @default(cuid())
+  caseId     String
+  case       Case     @relation(fields: [caseId], references: [id])
+  type       String
+  reference  String
+  recordedBy String
+  recordedAt DateTime @default(now())
+}
+
+model OutreachAttempt {
+  id      String   @id @default(cuid())
+  caseId  String
+  case    Case     @relation(fields: [caseId], references: [id])
+  channel Channel
+  outcome String
+  at      DateTime @default(now())
+}
+
+model Referral {
+  id              String         @id @default(cuid())
+  caseId          String
+  case            Case           @relation(fields: [caseId], references: [id])
+  initiatorOrgId  String
+  initiatorOrg    Organization   @relation("ReferralInitiator", fields: [initiatorOrgId], references: [id])
+  recipientOrgId  String
+  recipientOrg    Organization   @relation("ReferralRecipient", fields: [recipientOrgId], references: [id])
+  status          ReferralStatus @default(offered)
+  procedureCode   String
+  reason          String
+  declineReason   String?
+  continuityPacket Json?
+  offeredAt       DateTime       @default(now())
+  respondedAt     DateTime?
+  fhirServiceRequestId String?
+  fhirTaskId      String?
+}
+
+model Consult {
+  id           String   @id @default(cuid())
+  caseId       String
+  case         Case     @relation(fields: [caseId], references: [id])
+  kind         String // patient_to_clinician | clinician_to_clinician
+  requesterId  String
+  responderId  String?
+  openedAt     DateTime @default(now())
+  respondedAt  DateTime?
+  outcome      String? // advice_given | accept_referral | needs_visit | escalated
+  thread       Json // [{authorId, at, text}]
+}
+
+model Message {
+  id            String           @id @default(cuid())
+  caseId        String
+  case          Case             @relation(fields: [caseId], references: [id])
+  patientId     String
+  patient       Patient          @relation(fields: [patientId], references: [id])
+  direction     MessageDirection
+  channel       Channel
+  locale        String
+  templateId    String?
+  text          String
+  graderVerdict Json? // {passed, checks:[...], model, version}
+  delivery      DeliveryStatus   @default(queued)
+  sentAt        DateTime?
+  createdAt     DateTime         @default(now())
+  fhirCommunicationId String?
+
+  @@index([caseId, createdAt])
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  caseId      String
+  case        Case              @relation(fields: [caseId], references: [id])
+  providerOrgId String
+  scheduledAt DateTime
+  status      AppointmentStatus @default(booked)
+  procedure   String
+  createdAt   DateTime          @default(now())
+  fhirId      String?
+}
+
+/// Anything AI produced that a human must act on. AI never acts directly except template-bound messaging.
+model AIProposal {
+  id          String         @id @default(cuid())
+  caseId      String
+  case        Case           @relation(fields: [caseId], references: [id])
+  kind        ProposalKind
+  feature     String // navigator | summariser | risk
+  model       String
+  payload     Json
+  sourceRefs  Json? // claim -> FHIR reference map for faithfulness
+  status      ProposalStatus @default(pending)
+  decidedById String?
+  decidedAt   DateTime?
+  createdAt   DateTime       @default(now())
+  auditLogId  String?
+
+  @@index([status, kind])
+}
+
+model Escalation {
+  id              String           @id @default(cuid())
+  caseId          String
+  case            Case             @relation(fields: [caseId], references: [id])
+  ruleId          String
+  targetRole      String
+  targetOrgId     String?
+  priority        String           @default("normal")
+  reason          String
+  suggestedAction String?
+  status          EscalationStatus @default(open)
+  createdAt       DateTime         @default(now())
+  acknowledgedAt  DateTime?
+  resolvedAt      DateTime?
+  resolvedById    String?
+  resolution      String?
+
+  @@index([status, targetRole])
+}
+
+/// Every PHI access and every AI invocation.
+model AuditLog {
+  id          String    @id @default(cuid())
+  at          DateTime  @default(now())
+  actorKind   ActorKind
+  actorId     String
+  action      String // read | write | ai.invoke | login | break_glass | toggle_feature
+  resource    String
+  resourceId  String?
+  patientId   String?
+  purpose     String?
+  aiFeature   String?
+  aiModel     String?
+  promptHash  String?
+  tokensIn    Int?
+  tokensOut   Int?
+  outcome     String?
+  metadata    Json?
+  fhirAuditEventId String?
+
+  @@index([patientId, at])
+  @@index([aiFeature, at])
+}
+
+model AIFeatureFlag {
+  name      String   @id // navigator | summariser | risk
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}
+
+/// Transactional outbox for FHIR projection and notifications; drained by pg-boss workers.
+model Outbox {
+  id          String    @id @default(cuid())
+  kind        String // fhir.upsert | notify.email | notify.whatsapp
+  payload     Json
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+  attempts    Int       @default(0)
+  lastError   String?
+
+  @@index([processedAt])
+}

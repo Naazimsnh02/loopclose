@@ -1,0 +1,38 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+analytics/output/
+
+# data (synthetic exports can be large; regenerate via scripts)
+analytics/data/synthea/
+*.ndjson
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# logs
+*.log
+.next-build/

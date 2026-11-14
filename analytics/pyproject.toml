@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loopclose-analytics"
+version = "0.1.0"
+description = "Synthetic data generation, impact simulation, drop-off risk model training, and AI evaluation harness for LoopClose."
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=2.0",
+  "pandas>=2.2",
+  "scikit-learn>=1.5",
+  "simpy>=4.1",
+  "pyyaml>=6.0",
+  "pydantic>=2.8",
+  "typer>=0.12",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "ruff>=0.6"]
+evals = ["anthropic>=0.40"]
+
+[project.scripts]
+lc-analytics = "loopclose_analytics.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["loopclose_analytics*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

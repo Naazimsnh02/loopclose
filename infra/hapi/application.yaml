@@ -1,0 +1,43 @@
+spring:
+  main:
+    allow-circular-references: true   # required by the HAPI starter's JPA wiring
+  # HAPI runs its own schema migrator; the bundled Flyway rejects Postgres 15/16 if left enabled.
+  flyway:
+    enabled: false
+    check-location: false
+    baselineOnMigrate: true
+  batch:
+    job:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://postgres:5432/hapi
+    username: loopclose
+    password: loopclose
+    driverClassName: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+      hibernate.search.enabled: false
+
+hapi:
+  fhir:
+    fhir_version: R4
+    server_address: http://localhost:8080/fhir
+    default_encoding: JSON
+    allow_external_references: true
+    allow_multiple_delete: true
+    expunge_enabled: true
+    # Subscriptions drive result intake (E11.1)
+    subscription:
+      resthook_enabled: true
+      websocket_enabled: false
+    cors:
+      allow_Credentials: true
+      allowed_origin:
+        - "*"
+    tester:
+      home:
+        name: LoopClose FHIR
+        server_address: http://localhost:8080/fhir
+        refuse_to_fetch_third_party_urls: false
+        fhir_version: R4

@@ -1,0 +1,31 @@
+{
+  "resourceType": "DiagnosticReport",
+  "id": "fit-pt-00001-sample",
+  "identifier": [
+    {
+      "system": "urn:lab:report",
+      "value": "fit-pt-00001-sample"
+    }
+  ],
+  "status": "final",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "29771-3",
+        "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/pt-00001"
+  },
+  "issued": "2026-10-24T08:00:00Z",
+  "conclusion": "FIT positive",
+  "extension": [
+    {
+      "url": "https://loopclose.health/fhir/StructureDefinition/flag",
+      "valueCode": "anaemia"
+    }
+  ]
+}

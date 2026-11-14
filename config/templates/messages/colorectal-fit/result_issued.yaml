@@ -1,0 +1,59 @@
+# Patient-facing message templates are the ONLY source of patient text. (E5.1 / E16.3)
+# Approval metadata is mandatory before a template may be sent in non-demo mode.
+id: colorectal-fit.result_issued.v1
+programme: colorectal-fit
+stage: result_issued
+purpose: Notify patient of a positive FIT result, explain what it means and does not mean, and set up next step.
+readingLevelTarget: grade6
+variables: [patientFirstName, programmeName, clinicName, nextStepDeadline, contactNumber]
+approval:
+  status: draft # draft | approved
+  approvedBy: null
+  approvedAt: null
+  reviewers: {} # locale -> reviewer name, date
+
+teachBack:
+  question:
+    en: "Just so I know I explained it well — in your own words, what is the next step?"
+    ar: "حتى أتأكد أنني شرحت الأمر جيدًا — بكلماتك أنت، ما هي الخطوة التالية؟"
+    ur: "تاکہ مجھے یقین ہو کہ میں نے اچھی طرح سمجھایا — اپنے الفاظ میں بتائیں، اگلا قدم کیا ہے؟"
+    hi: "यह सुनिश्चित करने के लिए कि मैंने ठीक से समझाया — अपने शब्दों में बताइए, अगला कदम क्या है?"
+  passCriteria: "Patient mentions a follow-up test / colonoscopy / seeing a doctor for a further check."
+
+body:
+  en: |
+    Hello {{patientFirstName}}, this is the {{programmeName}} team at {{clinicName}}.
+
+    Your recent stool (FIT) screening test found a small amount of blood that cannot be seen by eye. This is common and it is not a diagnosis of cancer. Most people with this result do not have cancer, but it does need a follow-up test called a colonoscopy to check the cause.
+
+    Next step: a doctor will contact you to arrange this check. We aim to do this by {{nextStepDeadline}}.
+
+    You can reply to this message with any question, or call us on {{contactNumber}}. A person is always available.
+  ar: |
+    مرحبًا {{patientFirstName}}، نحن فريق {{programmeName}} في {{clinicName}}.
+
+    أظهر فحص البراز (FIT) الأخير وجود كمية صغيرة من الدم لا تُرى بالعين. هذا أمر شائع وليس تشخيصًا بالسرطان. معظم الأشخاص الذين تظهر لديهم هذه النتيجة ليس لديهم سرطان، لكن النتيجة تحتاج إلى فحص متابعة يُسمى تنظير القولون لمعرفة السبب.
+
+    الخطوة التالية: سيتواصل معك طبيب لترتيب هذا الفحص. نهدف إلى إتمامه بحلول {{nextStepDeadline}}.
+
+    يمكنك الرد على هذه الرسالة بأي سؤال، أو الاتصال بنا على {{contactNumber}}. هناك دائمًا شخص متاح لمساعدتك.
+  ur: |
+    السلام علیکم {{patientFirstName}}، ہم {{clinicName}} میں {{programmeName}} کی ٹیم ہیں۔
+
+    آپ کے حالیہ پاخانے کے (FIT) ٹیسٹ میں خون کی بہت تھوڑی مقدار ملی ہے جو آنکھ سے نظر نہیں آتی۔ یہ عام بات ہے اور یہ کینسر کی تشخیص نہیں ہے۔ اس نتیجے والے زیادہ تر لوگوں کو کینسر نہیں ہوتا، لیکن وجہ جاننے کے لیے کولونوسکوپی نامی ایک فالو اپ ٹیسٹ ضروری ہے۔
+
+    اگلا قدم: ایک ڈاکٹر اس ٹیسٹ کا انتظام کرنے کے لیے آپ سے رابطہ کرے گا۔ ہماری کوشش ہے کہ یہ {{nextStepDeadline}} تک ہو جائے۔
+
+    آپ کسی بھی سوال کے لیے اس پیغام کا جواب دے سکتے ہیں، یا ہمیں {{contactNumber}} پر کال کریں۔ ایک شخص ہمیشہ دستیاب ہے۔
+  hi: |
+    नमस्ते {{patientFirstName}}, हम {{clinicName}} में {{programmeName}} की टीम हैं।
+
+    आपकी हाल की मल (FIT) जाँच में खून की बहुत थोड़ी मात्रा मिली है जो आँख से नहीं दिखती। यह आम बात है और यह कैंसर का निदान नहीं है। इस परिणाम वाले अधिकांश लोगों को कैंसर नहीं होता, लेकिन कारण जानने के लिए कोलोनोस्कोपी नामक एक फ़ॉलो-अप जाँच ज़रूरी है।
+
+    अगला कदम: एक डॉक्टर इस जाँच की व्यवस्था के लिए आपसे संपर्क करेंगे। हमारा लक्ष्य {{nextStepDeadline}} तक इसे करना है।
+
+    किसी भी सवाल के लिए आप इस संदेश का जवाब दे सकते हैं, या हमें {{contactNumber}} पर कॉल करें। एक व्यक्ति हमेशा उपलब्ध है।
+
+guardrails:
+  mustNotContain: ["you have cancer", "you do not have cancer", "nothing to worry", "probably nothing", probability, percent, "%"]
+  mustPreserve: [not a diagnosis, follow-up test, a person is available]

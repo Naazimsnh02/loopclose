@@ -1,0 +1,17 @@
+Metadata-Version: 2.4
+Name: loopclose-analytics
+Version: 0.1.0
+Summary: Synthetic data generation, impact simulation, drop-off risk model training, and AI evaluation harness for LoopClose.
+Requires-Python: >=3.11
+Requires-Dist: numpy>=2.0
+Requires-Dist: pandas>=2.2
+Requires-Dist: scikit-learn>=1.5
+Requires-Dist: simpy>=4.1
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: pydantic>=2.8
+Requires-Dist: typer>=0.12
+Provides-Extra: dev
+Requires-Dist: pytest>=8.3; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
+Provides-Extra: evals
+Requires-Dist: anthropic>=0.40; extra == "evals"

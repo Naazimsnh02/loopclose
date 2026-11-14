@@ -1,0 +1,62 @@
+# Patient navigator — shared safety routing (E5.4 / E5.5). Deterministic and auditable:
+# these lists run BEFORE anything else on every inbound patient message, with or without an LLM.
+# Matching is case-insensitive substring. Order of precedence: emergency > distress > teach-back (when awaited) > request for a person > FAQ.
+# Clinical lead + native-speaker review required before pilot (see docs/responsible-ai/risk-register.md R2, R6).
+version: nav-common-0.1.0
+
+keywords:
+  emergency:
+    en: ["kill myself", "suicide", "end my life", "want to die", "heavy bleeding", "bleeding a lot", "severe pain", "chest pain", "can't breathe", "cannot breathe", "fainted", "collapsed"]
+    ar: ["انتحار", "أقتل نفسي", "انهي حياتي", "أنهي حياتي", "نزيف شديد", "نزيف", "ألم شديد", "ألم في الصدر", "لا أستطيع التنفس", "أغمي علي", "إغماء"]
+    ur: ["خودکشی", "اپنی جان", "بہت خون", "شدید درد", "سینے میں درد", "سانس نہیں", "بے ہوش"]
+    hi: ["आत्महत्या", "जान दे", "बहुत खून", "तेज़ दर्द", "तेज दर्द", "सीने में दर्द", "सांस नहीं", "साँस नहीं", "बेहोश"]
+  distress:
+    en: ["scared", "afraid", "frightened", "terrified", "panic", "can't sleep", "cannot sleep", "crying", "going to die", "hopeless", "very worried", "so worried", "anxious"]
+    ar: ["خائف", "خايف", "خائفة", "خايفة", "قلق", "قلقة", "خوف", "مرعوب", "أبكي", "سأموت", "لا أنام", "متوتر", "متوترة"]
+    ur: ["ڈر", "ڈری", "خوف", "پریشان", "گھبراہٹ", "رو رہی", "رو رہا", "نیند نہیں"]
+    hi: ["डर", "चिंता", "घबरा", "परेशान", "रो रही", "रो रहा", "नींद नहीं"]
+  human:
+    en: ["speak to someone", "talk to someone", "speak to a person", "talk to a person", "real person", "a human", "please call me", "can you call me", "can someone call me", "call me back", "call me please", "speak to a nurse", "talk to a nurse", "speak to a doctor", "talk to a doctor"]
+    ar: ["أريد التحدث", "أبي أكلم", "اتصلوا بي", "اتصل بي", "اتصلي بي", "شخص حقيقي", "موظف", "إنسان", "ممرضة"]
+    ur: ["کال کریں", "فون کریں", "کسی سے بات", "کسی انسان", "نرس"]
+    hi: ["कॉल करें", "फ़ोन करें", "फोन करें", "किसी से बात", "इंसान", "नर्स"]
+  unsure:
+    en: ["don't know", "dont know", "do not know", "not sure", "no idea", "confused", "don't understand", "dont understand", "didn't understand"]
+    ar: ["لا أعرف", "ما أعرف", "مش عارف", "ما فهمت", "لم أفهم", "مش فاهم", "غير متأكد"]
+    ur: ["نہیں معلوم", "نہیں پتا", "سمجھ نہیں", "پتہ نہیں"]
+    hi: ["पता नहीं", "समझ नहीं", "मालूम नहीं"]
+
+messages:
+  emergency:
+    en: "If you feel very unwell right now, please call 998 for an ambulance or go to the nearest emergency department. I have also asked a clinician from our team to call you as soon as possible."
+    ar: "إذا كنت تشعر بتوعك شديد الآن، يرجى الاتصال بالإسعاف على 998 أو التوجه إلى أقرب قسم طوارئ. وقد طلبت أيضًا من أحد أطباء فريقنا الاتصال بك في أقرب وقت ممكن."
+    ur: "اگر آپ ابھی بہت زیادہ بیمار محسوس کر رہے ہیں تو براہ کرم ایمبولینس کے لیے 998 پر کال کریں یا قریبی ایمرجنسی میں جائیں۔ میں نے ہماری ٹیم کے ایک ڈاکٹر سے بھی کہا ہے کہ وہ جلد از جلد آپ کو کال کریں۔"
+    hi: "अगर आप अभी बहुत अस्वस्थ महसूस कर रहे हैं, तो कृपया एम्बुलेंस के लिए 998 पर कॉल करें या नज़दीकी आपातकालीन विभाग जाएँ। मैंने हमारी टीम के एक डॉक्टर से भी जल्द से जल्द आपको कॉल करने के लिए कहा है।"
+  distress:
+    en: "Thank you for telling me. It is normal to feel worried after a result like this, and you do not have to go through it alone. A clinician from our team will call you today to talk it through."
+    ar: "شكرًا لأنك أخبرتني. من الطبيعي أن تشعر بالقلق بعد نتيجة كهذه، ولست وحدك في ذلك. سيتصل بك أحد أطباء فريقنا اليوم للتحدث معك."
+    ur: "مجھے بتانے کا شکریہ۔ ایسے نتیجے کے بعد فکر مند ہونا عام بات ہے، اور آپ اکیلے نہیں ہیں۔ ہماری ٹیم کا ایک ڈاکٹر آج آپ کو کال کر کے بات کرے گا۔"
+    hi: "मुझे बताने के लिए धन्यवाद। ऐसे परिणाम के बाद चिंता होना सामान्य है, और आप अकेले नहीं हैं। हमारी टीम के एक डॉक्टर आज आपको कॉल करके बात करेंगे।"
+  human:
+    en: "Of course. I have asked a member of our team to call you. They usually call within one working day. You can also call us on {{contactNumber}}."
+    ar: "بالتأكيد. لقد طلبت من أحد أعضاء فريقنا الاتصال بك، وعادةً ما يتم ذلك خلال يوم عمل واحد. يمكنك أيضًا الاتصال بنا على {{contactNumber}}."
+    ur: "ضرور۔ میں نے ہماری ٹیم کے ایک رکن سے آپ کو کال کرنے کے لیے کہا ہے۔ وہ عام طور پر ایک کاروباری دن کے اندر کال کرتے ہیں۔ آپ ہمیں {{contactNumber}} پر بھی کال کر سکتے ہیں۔"
+    hi: "ज़रूर। मैंने हमारी टीम के एक सदस्य से आपको कॉल करने के लिए कहा है। वे आमतौर पर एक कार्यदिवस के भीतर कॉल करते हैं। आप हमें {{contactNumber}} पर भी कॉल कर सकते हैं।"
+  not_understood:
+    en: "Thank you. I want to make sure this is clear, so a member of our team will call you to explain it in person, in your language."
+    ar: "شكرًا لك. أريد أن أتأكد من أن الأمر واضح، لذلك سيتصل بك أحد أعضاء فريقنا ليشرحه لك شخصيًا وبلغتك."
+    ur: "شکریہ۔ میں یقینی بنانا چاہتا ہوں کہ بات واضح ہو، اس لیے ہماری ٹیم کا ایک رکن آپ کو کال کر کے آپ کی زبان میں سمجھائے گا۔"
+    hi: "धन्यवाद। मैं यह पक्का करना चाहता हूँ कि बात साफ़ हो, इसलिए हमारी टीम का एक सदस्य आपको कॉल करके आपकी भाषा में समझाएगा।"
+  question_forwarded:
+    en: "Thank you for your question. I have passed it to our team and someone will reply to you soon. If it is urgent, please call {{contactNumber}}."
+    ar: "شكرًا على سؤالك. لقد نقلته إلى فريقنا وسيرد عليك أحدهم قريبًا. إذا كان الأمر عاجلًا، يرجى الاتصال على {{contactNumber}}."
+    ur: "آپ کے سوال کا شکریہ۔ میں نے اسے ہماری ٹیم تک پہنچا دیا ہے اور جلد کوئی آپ کو جواب دے گا۔ اگر فوری ہو تو براہ کرم {{contactNumber}} پر کال کریں۔"
+    hi: "आपके सवाल के लिए धन्यवाद। मैंने इसे हमारी टीम तक पहुँचा दिया है और जल्द ही कोई आपको जवाब देगा। अगर ज़रूरी हो तो कृपया {{contactNumber}} पर कॉल करें।"
+  closing:
+    en: "You can message here at any time. A person from our team reads every message."
+    ar: "يمكنك المراسلة هنا في أي وقت. يقرأ أحد أعضاء فريقنا كل رسالة."
+    ur: "آپ کسی بھی وقت یہاں پیغام بھیج سکتے ہیں۔ ہماری ٹیم کا ایک فرد ہر پیغام پڑھتا ہے۔"
+    hi: "आप यहाँ कभी भी संदेश भेज सकते हैं। हमारी टीम का एक व्यक्ति हर संदेश पढ़ता है।"
+
+guardrails:
+  mustNotContain: ["you have cancer", "you do not have cancer", "nothing to worry", "probably nothing", probability, percent, "%"]
