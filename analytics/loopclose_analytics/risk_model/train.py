@@ -9,7 +9,7 @@ validity for real patients and the export says so in `limitation`.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -70,15 +70,15 @@ def train_and_export(seed: int, out_path: Path, n: int = 20000) -> dict:
     auc, brier = float(roc_auc_score(y_te, p)), float(brier_score_loss(y_te, p))
 
     export = {
-        "version": f"risk-lr-{datetime.now(timezone.utc).strftime('%Y%m%d')}-synthetic",
+        "version": f"risk-lr-{datetime.now(UTC).strftime('%Y%m%d')}-synthetic",
         "trainedOn": "synthetic",
-        "trainedAt": datetime.now(timezone.utc).isoformat(),
+        "trainedAt": datetime.now(UTC).isoformat(),
         "features": FEATURES,
         "intercept": float(model.intercept_[0]),
         "coefficients": {f: float(c) for f, c in zip(FEATURES, model.coef_[0])},
         "scaler": {f: {"mean": float(m), "scale": float(s)} for f, m, s in zip(FEATURES, scaler.mean_, scaler.scale_)},
         "thresholds": {"amber": 0.35, "red": 0.60},
-        "holdout": {"auc": auc, "brier": brier, "n": int(len(y_te)), "prevalence": float(y_te.mean())},
+        "holdout": {"auc": auc, "brier": brier, "n": len(y_te), "prevalence": float(y_te.mean())},
         "limitation": (
             "Trained on synthetic data generated from an assumed barrier model. Demonstrates the pipeline and "
             "explainability only; no predictive validity for real patients. Rules fallback governs the first "

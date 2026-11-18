@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -58,7 +58,7 @@ def _demographics(rng: np.random.Generator, i: int) -> Patient:
     return Patient(
         fhirId=f"pt-{i:05d}",
         givenName=f"Patient{i:05d}",
-        familyName=f"Synthetic",
+        familyName="Synthetic",
         birthDate=birth.isoformat(),
         sex=str(rng.choice(["female", "male"])),
         nationality=str(rng.choice(NATIONALITY_BY_LOCALE[locale])),
@@ -114,7 +114,7 @@ def _mammogram_result(rng: np.random.Generator, p: Patient, when: datetime) -> R
 
 def generate_population(n: int, seed: int, out_dir: Path) -> dict:
     rng = np.random.default_rng(seed)
-    start = datetime(2026, 9, 1, tzinfo=timezone.utc)
+    start = datetime(2026, 9, 1, tzinfo=UTC)
     patients: list[Patient] = []
     results: list[Result] = []
     for i in range(n):
