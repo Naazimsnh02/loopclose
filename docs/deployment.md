@@ -1,5 +1,7 @@
 # Hosted sandbox deployment
 
+**Live (2026-11-18):** web https://loopclose-tawny.vercel.app · API https://loopclose-api.onrender.com (health `/health`). Render Blueprint `loopclose` (Singapore, free); Vercel project `loopclose` deployed from the CLI (`vercel deploy --prod` at the repo root; not Git-connected). Free Postgres expires 2026-12-18.
+
 The hosted sandbox has three parts:
 
 | Part | Where | Why |

@@ -2,6 +2,13 @@
 
 Keep newest first. One line per verified milestone; link task ids from `IMPLEMENTATION_PLAN.md`.
 
+## 2026-11-18 — Hosted sandbox live
+
+- Web: https://loopclose-tawny.vercel.app (Vercel, CLI deploy). API + Postgres: https://loopclose-api.onrender.com (Render Blueprint, free, Singapore).
+- Fixed the API Dockerfile (it never built: missing `tsconfig.base.json`, no OpenSSL for Prisma, wrong working directory for config paths, `pnpm` absent at runtime). Verified locally against an empty Postgres in production mode before pushing.
+- Hosted DB seeded from the laptop (16 users, 81 synthetic cases); clock sweep raised the overdue escalations.
+- Smoke test on the live site: persona list → Mariam worklist (73 overdue, risk pills) → push Arabic FIT result → patient chat → teach-back passes → coordinator proposal. Demo then reset.
+
 ## 2026-11-14 (later) — Risk worker, patient navigator, governance console, demo controls
 
 **Done (each verified via API and headless-browser screenshots)**
