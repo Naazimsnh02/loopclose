@@ -1,0 +1,71 @@
+{
+  "version": "risk-lr-20261024-synthetic",
+  "trainedOn": "synthetic",
+  "trainedAt": "2026-10-24T11:14:04.646071+00:00",
+  "features": [
+    "hours_since_notification_no_ack",
+    "channel_failures",
+    "prior_no_shows",
+    "transport_barrier",
+    "language_mismatch",
+    "age_band_70plus",
+    "referral_pending_days",
+    "weekend_entry"
+  ],
+  "intercept": -0.5238348296638569,
+  "coefficients": {
+    "hours_since_notification_no_ack": 0.4486829453169938,
+    "channel_failures": 0.32969295577698515,
+    "prior_no_shows": 0.5072347351227282,
+    "transport_barrier": 0.32137724087284775,
+    "language_mismatch": 0.2411049776366728,
+    "age_band_70plus": 0.09701367368516728,
+    "referral_pending_days": 0.360564547714751,
+    "weekend_entry": 0.03513466771261553
+  },
+  "scaler": {
+    "hours_since_notification_no_ack": {
+      "mean": 29.846736633310584,
+      "scale": 29.956950016332893
+    },
+    "channel_failures": {
+      "mean": 0.3041333333333333,
+      "scale": 0.5482422659939558
+    },
+    "prior_no_shows": {
+      "mean": 0.40113333333333334,
+      "scale": 0.635787214579046
+    },
+    "transport_barrier": {
+      "mean": 0.12126666666666666,
+      "scale": 0.3264369192083577
+    },
+    "language_mismatch": {
+      "mean": 0.2982666666666667,
+      "scale": 0.4574971718187785
+    },
+    "age_band_70plus": {
+      "mean": 0.15046666666666667,
+      "scale": 0.3575282490781254
+    },
+    "referral_pending_days": {
+      "mean": 1.500970319054519,
+      "scale": 1.4913695197136192
+    },
+    "weekend_entry": {
+      "mean": 0.28113333333333335,
+      "scale": 0.4495524243313741
+    }
+  },
+  "thresholds": {
+    "amber": 0.35,
+    "red": 0.6
+  },
+  "holdout": {
+    "auc": 0.7197916603278343,
+    "brier": 0.2011446522339508,
+    "n": 5000,
+    "prevalence": 0.3844
+  },
+  "limitation": "Trained on synthetic data generated from an assumed barrier model. Demonstrates the pipeline and explainability only; no predictive validity for real patients. Rules fallback governs the first 30 days of any pilot; retrain on pilot outcomes with clinical sign-off before model-driven escalation."
+}

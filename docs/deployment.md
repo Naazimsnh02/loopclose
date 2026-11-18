@@ -20,9 +20,11 @@ pnpm --filter @loopclose/api seed
 pnpm --filter @loopclose/api seed:synthetic   # needs analytics/output/*.ndjson locally
 ```
 
-## 2. API (Render example)
+## 2. API + database (Render Blueprint)
 
-New **Web Service** → this repo → **Docker**, Dockerfile path `apps/api/Dockerfile`, Docker context = repo root. Health check path `/health`.
+`render.yaml` at the repo root defines both the Postgres database and the Docker web service (free plan, Singapore). In Render: **New → Blueprint** → pick this repo → enter `CORS_ORIGIN` when prompted → **Apply**. After the first deploy, copy the database's **External Database URL** and run step 1 from your machine, then **Manual Deploy → Restart** the API so past-due SLA timers fire.
+
+Manual alternative: New **Web Service** → this repo → **Docker**, Dockerfile path `apps/api/Dockerfile`, Docker context = repo root. Health check path `/health`.
 
 | Variable | Value |
 |---|---|
@@ -34,11 +36,11 @@ New **Web Service** → this repo → **Docker**, Dockerfile path `apps/api/Dock
 | `FHIR_BASE_URL` | leave unset, or your HAPI URL |
 | `ANTHROPIC_API_KEY` | leave empty (navigator and grader are rules-based) |
 
-The container runs `prisma migrate deploy` on start. `PORT` is read automatically.
+The container runs `prisma migrate deploy` on start. `PORT` is read automatically. Free Render Postgres expires 30 days after creation; upgrade or recreate it if judging runs longer.
 
 ## 3. Web (Vercel)
 
-Import the repo → **Root Directory** `apps/web` (framework auto-detected as Next.js, pnpm from the lockfile).
+Import the repo → **Root Directory** `apps/web`. `apps/web/vercel.json` installs from the workspace root and builds `@loopclose/shared` first. Set `ENABLE_EXPERIMENTAL_COREPACK=1` so Vercel uses the pinned pnpm 11.
 
 | Variable | Value |
 |---|---|
