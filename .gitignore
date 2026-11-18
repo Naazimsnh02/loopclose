@@ -38,3 +38,14 @@ Thumbs.db
 .next-build/
 
 .vercel
+
+# internal working material (kept locally, not published)
+winning-plan.md
+screening-to-care-brief.md
+docs/IMPLEMENTATION_PLAN.md
+docs/STATUS.md
+docs/submission/
+docs/*.pptx
+docs/*.pdf
+*.egg-info/
+*.mp4

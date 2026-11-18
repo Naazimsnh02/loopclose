@@ -1,6 +1,6 @@
 # DoH Responsible AI Standard → LoopClose controls
 
-**Source:** Department of Health Abu Dhabi, *Responsible Artificial Intelligence (AI) Standard*, Ref. DoH/ST/DDGO/RAI/V1/2025, V1, published/effective Oct 2025, owner Data and Digital Governance Office (DDGO). Local copy: `docs/Responsible AI Standard-V1.pdf`. Related references the Standard cites: AI Policy Standard (Jun 2025), AI Risk Management Protocol V1.0 (Jul 2025), ADHICS Standard (May 2024).
+**Source:** Department of Health Abu Dhabi, *Responsible Artificial Intelligence (AI) Standard*, Ref. DoH/ST/DDGO/RAI/V1/2025, V1, published/effective Oct 2025, owner Data and Digital Governance Office (DDGO). Available from the Department of Health Abu Dhabi (not redistributed in this repository). Related references the Standard cites: AI Policy Standard (Jun 2025), AI Risk Management Protocol V1.0 (Jul 2025), ADHICS Standard (May 2024).
 
 Scope (§1.2): applies to all DoH-licensed entities developing, procuring or deploying AI systems — clinical, administrative or operational — across the whole lifecycle. LoopClose falls in scope as an administrative/operational AI-enabled platform with patient-facing communication.
 

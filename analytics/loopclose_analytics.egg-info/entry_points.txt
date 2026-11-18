@@ -1,2 +1,0 @@
-[console_scripts]
-lc-analytics = loopclose_analytics.cli:app

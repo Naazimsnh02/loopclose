@@ -37,9 +37,7 @@ lc-analytics synthetic && lc-analytics simulate && lc-analytics train-risk
 | `config/templates` | Patient message templates (ar/en/ur/hi) with approval metadata and guardrails |
 | `config/escalation-rules.yaml` | Escalation rules |
 | `infra` | HAPI and Postgres config |
-| `docs` | Implementation plan, ADRs, demo script, metrics definitions, integration guide, Responsible AI dossier, assumptions, limitations |
-
-Strategy: `winning-plan.md`. Plan of record: `docs/IMPLEMENTATION_PLAN.md`.
+| `docs` | Architecture, ADRs, demo script, metrics definitions, integration guide, Responsible AI dossier, assumptions, limitations |
 
 ## Key design guarantees (enforced in code and tests)
 
@@ -58,7 +56,7 @@ curl -X POST http://localhost:4000/api/auth/demo-login -H 'content-type: applica
 curl http://localhost:8080/fhir/Task?code=screening-case          # projected case Tasks in HAPI
 ```
 
-Troubleshooting: HAPI needs 30–90 s on first boot; the HAPI image's Flyway is disabled in `infra/hapi/application.yaml` on purpose (it rejects Postgres 15/16). Docker Desktop must be running before `pnpm infra:up`. Build status: `docs/STATUS.md`.
+Troubleshooting: HAPI needs 30–90 s on first boot; the HAPI image's Flyway is disabled in `infra/hapi/application.yaml` on purpose (it rejects Postgres 15/16). Docker Desktop must be running before `pnpm infra:up`.
 
 ## Scripts
 

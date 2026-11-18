@@ -1,5 +1,5 @@
 // LoopClose relational model. The FHIR projection (HAPI) is derived from these tables via the outbox.
-// Synthetic data only. See docs/IMPLEMENTATION_PLAN.md §1.1.
+// Synthetic data only.
 
 generator client {
   provider = "prisma-client-js"
